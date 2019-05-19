@@ -6,4 +6,32 @@ branches:
   - master
   - travis
 
-script: echo "Hello, World!"
+jobs:
+  include:
+    - stage: build
+      script:
+      - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+      - docker-compose build
+      - docker images
+      - docker tag $DOCKER_USERNAME/ready-to-run:openwisp-dashboard $DOCKER_USERNAME/travis:openwisp-dashboard
+      - docker tag $DOCKER_USERNAME/ready-to-run:openwisp-controller $DOCKER_USERNAME/travis:openwisp-controller
+      - docker tag $DOCKER_USERNAME/ready-to-run:openwisp-radius $DOCKER_USERNAME/travis:openwisp-radius
+      - docker tag $DOCKER_USERNAME/ready-to-run:openwisp-topology $DOCKER_USERNAME/travis:openwisp-topology
+      - docker tag $DOCKER_USERNAME/ready-to-run:openwisp-orchestration $DOCKER_USERNAME/travis:openwisp-orchestration
+      - docker push $DOCKER_USERNAME/travis:openwisp-dashboard
+      - docker push $DOCKER_USERNAME/travis:openwisp-controller
+      - docker push $DOCKER_USERNAME/travis:openwisp-radius
+      - docker push $DOCKER_USERNAME/travis:openwisp-topology
+      - docker push $DOCKER_USERNAME/travis:openwisp-orchestration
+    - stage: test
+      name: dashboard
+      script:
+      - docker pull $DOCKER_USERNAME/travis:openwisp-dashboard
+      - docker pull $DOCKER_USERNAME/travis:openwisp-orchestration
+      - docker tag $DOCKER_USERNAME/travis:openwisp-dashboard $DOCKER_USERNAME/ready-to-run:openwisp-dashboard
+      - docker tag $DOCKER_USERNAME/travis:openwisp-orchestration $DOCKER_USERNAME/ready-to-run:openwisp-orchestration
+      # - script:
+      # - docker pull $DOCKER_USERNAME/travis:openwisp-controller
+      # - docker pull $DOCKER_USERNAME/travis:openwisp-orchestration
+      # - docker tag $DOCKER_USERNAME/travis:openwisp-controller $DOCKER_USERNAME/ready-to-run:openwisp-controller
+      # name: controller
