@@ -1,4 +1,4 @@
-FROM python:3.7-alpine AS SYSTEM
+FROM python:3.8.0-alpine AS SYSTEM
 
 # TODO: install proj4 when it's available.
 # System requirements:
